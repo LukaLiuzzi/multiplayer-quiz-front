@@ -1,14 +1,16 @@
 "use client"
 
-import useSocket from "@/hooks/useSocket"
+// import useSocket from "@/hooks/useSocket"
 import { Button } from "./ui/button"
 import { useState } from "react"
 import { Input } from "./ui/input"
+import { useSocketContext } from "@/context/SocketContext"
 
 const HomeOptions = () => {
-  const [inputId, setInputId] = useState("")
+  const [roomId, setRoomId] = useState("")
 
-  const { createRoom, joinRoom, room, socket } = useSocket()
+  const { createRoom, joinRoom, room } = useSocketContext()
+
   return (
     <>
       {room === null && (
@@ -24,30 +26,17 @@ const HomeOptions = () => {
             <form
               onSubmit={(e) => {
                 e.preventDefault()
-                joinRoom(inputId, socket)
+                joinRoom(roomId)
               }}
             >
               <Input
                 placeholder="Id de la sala"
-                onChange={(e) => setInputId(e.target.value)}
+                onChange={(e) => setRoomId(e.target.value)}
               />
               <Button>Unirse a sala</Button>
             </form>
           </div>
         </>
-      )}
-      {room?.state === "waiting" && (
-        <div>
-          <h2>Esperando jugadores:</h2>
-          <ul>
-            {room.players.map((player) => (
-              <div key={player.id}>
-                <li>{player.id}</li>
-                <li>ROOM ID: {room.id}</li>
-              </div>
-            ))}
-          </ul>
-        </div>
       )}
     </>
   )
