@@ -1,5 +1,3 @@
-"use client"
-
 import { Room } from "@/types"
 import { useEffect, useState } from "react"
 import { Socket, io } from "socket.io-client"
@@ -10,24 +8,31 @@ const useSocket = () => {
   const [room, setRoom] = useState<Room | null>(null)
 
   useEffect(() => {
+    initializeSocket()
+    setupEventListeners()
+
+    return cleanup
+  }, [])
+
+  function initializeSocket() {
     socket = io("http://localhost:8080")
     socket.on("connect", () => {
       console.log("connected")
     })
+  }
 
+  function setupEventListeners() {
     socket.on("room-created", roomCreated)
-
-    socket.on("room-not-found", () => alert("room not found"))
-
+    socket.on("room-not-found", handleRoomNotFound)
     socket.on("room-joined", roomJoined)
+  }
 
-    return () => {
-      socket.disconnect()
-      socket.off("room-created")
-      socket.off("room-not-found")
-      socket.off("room-joined")
-    }
-  }, [])
+  function cleanup() {
+    socket.disconnect()
+    socket.off("room-created", roomCreated)
+    socket.off("room-not-found", handleRoomNotFound)
+    socket.off("room-joined", roomJoined)
+  }
 
   function roomCreated(room: Room) {
     console.log("room created", room)
@@ -39,13 +44,17 @@ const useSocket = () => {
     setRoom(room)
   }
 
+  function handleRoomNotFound() {
+    alert("room not found")
+  }
+
   function createRoom() {
-    console.log("create room ejecutada", socket.id)
+    console.log("create room executed", socket.id)
     socket.emit("create-room", socket.id)
   }
 
-  function joinRoom(roomId: string, socket: Socket) {
-    console.log("join room ejecutada", socket.id)
+  function joinRoom(roomId: string) {
+    console.log("join room executed", socket.id)
     socket.emit("join-room", roomId, socket.id)
   }
 
