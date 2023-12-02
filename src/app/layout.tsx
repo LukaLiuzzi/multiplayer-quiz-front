@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
+import { SocketProvider } from "@/context/SocketContext"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -15,10 +16,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es">
-      <body className={`${inter.className} dark`} suppressHydrationWarning>
-        {children}
-      </body>
-    </html>
+    <SocketProvider>
+      <html lang="es">
+        <body className={`${inter.className} dark`} suppressHydrationWarning>
+          {children}
+        </body>
+      </html>
+    </SocketProvider>
   )
 }
