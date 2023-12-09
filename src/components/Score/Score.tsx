@@ -1,17 +1,24 @@
 "use client"
 
 import { useSocketContext } from "@/context/SocketContext"
+import { Room } from "@/types"
+import { useEffect, useState } from "react"
 
-// TODO: AGREGARLE ID A LAS PREGUNTAS Y RESPUESTAS PORQUE SINO DA PROBLEMAS
 const Score: React.FC = () => {
-  const { room } = useSocketContext()
+  const { room, leaveRoom } = useSocketContext()
+  const [roomSnapshot, setRoomSnapshot] = useState<Room | null>(null) // This is a deep clone of the room object to avoid loss score when player leaves the room
+
+  useEffect(() => {
+    setRoomSnapshot(room) // This is a deep clone of the room object to avoid loss score when player leaves the room
+  }, [])
+
   return (
     <div className="py-8 px-4">
       <h1 className="text-4xl font-semibold text-center mb-8">
         Resultados de la partida
       </h1>
       <div className="flex flex-col md:flex-row justify-center items-center gap-12">
-        {room?.players.map((player, playerIndex) => {
+        {roomSnapshot?.players.map((player, playerIndex) => {
           return (
             <section
               key={player.id}
@@ -89,7 +96,10 @@ const Score: React.FC = () => {
         </span>
       </div>
 
-      <button className="mt-12 bg-blue-500 text-white px-4 py-2 w-full max-w-sm rounded flex justify-center items-center mx-auto">
+      <button
+        className="mt-12 bg-blue-500 text-white px-4 py-2 w-full max-w-sm rounded flex justify-center items-center mx-auto"
+        onClick={() => leaveRoom()}
+      >
         Volver a jugar
       </button>
     </div>

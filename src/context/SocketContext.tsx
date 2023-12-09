@@ -22,7 +22,7 @@ type SocketContextType = {
   room: Room | null
   createRoom: () => void
   joinRoom: (roomId: string) => void
-  leaveRoom: (roomId: string) => void
+  leaveRoom: () => void
   startGame: (roomId: string) => void
   sendQuestions: (questions: Question[]) => void
   sendAnswers: (questions: AnsweredQuestion[]) => void
@@ -138,8 +138,8 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
     socket?.emit("join-room", roomId, socket.id)
   }
 
-  function leaveRoom(roomId: string) {
-    socket?.emit("leave-room", socket.id, roomId)
+  function leaveRoom() {
+    socket?.emit("leave-room", socket.id, room?.id)
     router.push("/")
     setRoom(null)
     toast.info("Abandonaste la sala")
