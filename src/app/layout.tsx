@@ -2,6 +2,8 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { SocketProvider } from "@/context/SocketContext"
+import { ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -19,6 +21,7 @@ export default function RootLayout({
     <SocketProvider>
       <html lang="es">
         <body className={`${inter.className} dark`} suppressHydrationWarning>
+          <ToastContainer />
           {children}
         </body>
       </html>
