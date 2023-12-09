@@ -3,7 +3,7 @@
 import { createContext, useState, useContext, useEffect } from "react"
 import { io, Socket } from "socket.io-client"
 import { useRouter } from "next/navigation"
-import { Question, Room } from "@/types"
+import { AnsweredQuestion, Question, Room } from "@/types"
 import { toast } from "react-toastify"
 
 const SocketContext = createContext<SocketContextType>({
@@ -14,6 +14,7 @@ const SocketContext = createContext<SocketContextType>({
   leaveRoom: () => {},
   startGame: () => {},
   sendQuestions: () => {},
+  sendAnswers: () => {},
 })
 
 type SocketContextType = {
@@ -24,6 +25,7 @@ type SocketContextType = {
   leaveRoom: (roomId: string) => void
   startGame: (roomId: string) => void
   sendQuestions: (questions: Question[]) => void
+  sendAnswers: (questions: AnsweredQuestion[]) => void
 }
 
 interface SocketProviderProps {
@@ -56,19 +58,23 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
 
     socket.on("room-created", roomCreated)
     socket.on("room-joined", roomJoined)
+    socket.on("room-error", handleRoomError)
     socket.on("room-left", roomLeft)
     socket.on("room-not-found", handleRoomNotFound)
     socket.on("game-started", gameStarted)
     socket.on("questions-sent", questionsReceived)
+    socket.on("answers-sent", answersReceived)
 
     // Cleanup event listeners on unmount
     return () => {
       socket.off("room-created", roomCreated)
       socket.off("room-not-found", handleRoomNotFound)
+      socket.off("room-error", handleRoomError)
       socket.off("room-joined", roomJoined)
       socket.off("room-left", roomLeft)
       socket.off("game-started", gameStarted)
       socket.off("questions-sent", questionsReceived)
+      socket.off("answers-sent", answersReceived)
     }
   }, [socket])
 
@@ -112,8 +118,16 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
     setRoom(room)
   }
 
+  function answersReceived(room: Room) {
+    setRoom(room)
+  }
+
   function handleRoomNotFound() {
-    alert("Room not found")
+    toast.error("La sala no existe")
+  }
+
+  function handleRoomError() {
+    toast.error("Ocurrio un error")
   }
 
   function createRoom() {
@@ -142,6 +156,13 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
     })
   }
 
+  function sendAnswers(answeredQuestions: AnsweredQuestion[]) {
+    socket?.emit("send-answers", {
+      answeredQuestions,
+      roomId: room?.id,
+    })
+  }
+
   const contextValue: SocketContextType = {
     socket,
     room,
@@ -150,6 +171,7 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
     leaveRoom,
     startGame,
     sendQuestions,
+    sendAnswers,
   }
 
   return (

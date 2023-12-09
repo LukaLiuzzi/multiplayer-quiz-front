@@ -1,12 +1,12 @@
 "use client"
 
 import { useSocketContext } from "@/context/SocketContext"
-import { Answer, Question } from "@/types"
+import { Answer, Question, AnsweredQuestion } from "@/types"
 import { useState, useEffect } from "react"
 import { toast } from "react-toastify"
 
 const AnswerQuestions: React.FC = () => {
-  const { room, socket } = useSocketContext()
+  const { room, socket, sendAnswers } = useSocketContext()
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(
@@ -15,6 +15,9 @@ const AnswerQuestions: React.FC = () => {
   const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number | null>(
     null
   )
+  const [answeredQuestions, setAnsweredQuestions] = useState<
+    AnsweredQuestion[]
+  >([])
 
   const mixAnswers = (answers: Answer[]) => {
     return answers.sort(() => Math.random() - 0.5)
@@ -57,6 +60,21 @@ const AnswerQuestions: React.FC = () => {
         )
       }
     }
+
+    // Save answer to array
+    const correctAnswer = questions[currentQuestionIndex].answers.find(
+      (answer) => answer.isCorrect
+    )
+    if (!correctAnswer) return
+    const newAnsweredQuestions = [...answeredQuestions]
+    newAnsweredQuestions[currentQuestionIndex] = {
+      question: questions[currentQuestionIndex].question,
+      answers: questions[currentQuestionIndex].answers,
+      correctAnswer: correctAnswer,
+      playerAnswer: questions[currentQuestionIndex].answers[answerIndex],
+    }
+
+    setAnsweredQuestions(newAnsweredQuestions)
   }
 
   const handleNextQuestion = () => {
@@ -98,15 +116,32 @@ const AnswerQuestions: React.FC = () => {
             )}
           </div>
 
-          <button
-            className={`bg-blue-500 text-white px-4 py-2 rounded w-full ${
-              selectedAnswerIndex === null ? "opacity-50" : ""
-            }`}
-            onClick={handleNextQuestion}
-            disabled={selectedAnswerIndex === null}
-          >
-            Siguiente Pregunta
-          </button>
+          {
+            // If it is last question, show submit button
+            currentQuestionIndex === questions.length - 1 ? (
+              <button
+                className={`mt-4 bg-green-500 text-white px-4 py-2 rounded w-full ${
+                  answeredQuestions.length < questions.length
+                    ? "opacity-50"
+                    : ""
+                }`}
+                disabled={answeredQuestions.length < questions.length}
+                onClick={() => sendAnswers(answeredQuestions)}
+              >
+                Enviar respuestas
+              </button>
+            ) : (
+              <button
+                className={`bg-blue-500 text-white px-4 py-2 rounded w-full ${
+                  selectedAnswerIndex === null ? "opacity-50" : ""
+                }`}
+                onClick={handleNextQuestion}
+                disabled={selectedAnswerIndex === null}
+              >
+                Siguiente Pregunta
+              </button>
+            )
+          }
         </div>
       )}
     </div>
