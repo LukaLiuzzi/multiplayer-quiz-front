@@ -98,7 +98,7 @@ const AnswerQuestions: React.FC = () => {
             {questions[currentQuestionIndex].answers.map(
               (answer, answerIndex) => (
                 <div
-                  key={answerIndex}
+                  key={answer.id}
                   className={`p-2 border rounded cursor-pointer mb-2 ${
                     selectedAnswerIndex === answerIndex
                       ? answer.isCorrect

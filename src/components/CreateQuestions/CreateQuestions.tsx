@@ -13,11 +13,12 @@ const CreateQuestions: React.FC = () => {
   const [questions, setQuestions] = useState<Question[]>([
     {
       question: "",
+      id: crypto.randomUUID(),
       answers: [
-        { text: "", isCorrect: true },
-        { text: "", isCorrect: false },
-        { text: "", isCorrect: false },
-        { text: "", isCorrect: false },
+        { text: "", isCorrect: true, id: crypto.randomUUID() },
+        { text: "", isCorrect: false, id: crypto.randomUUID() },
+        { text: "", isCorrect: false, id: crypto.randomUUID() },
+        { text: "", isCorrect: false, id: crypto.randomUUID() },
       ],
     },
   ])
@@ -28,6 +29,7 @@ const CreateQuestions: React.FC = () => {
   ) => {
     const newQuestions = [...questions]
     newQuestions[index].question = event.target.value
+    newQuestions[index].id = crypto.randomUUID()
     setQuestions(newQuestions)
   }
 
@@ -38,6 +40,7 @@ const CreateQuestions: React.FC = () => {
   ) => {
     const newQuestions = [...questions]
     newQuestions[questionIndex].answers[answerIndex].text = event.target.value
+    newQuestions[questionIndex].answers[answerIndex].id = crypto.randomUUID()
     setQuestions(newQuestions)
   }
 
@@ -47,11 +50,12 @@ const CreateQuestions: React.FC = () => {
         ...prevQuestions,
         {
           question: "",
+          id: crypto.randomUUID(),
           answers: [
-            { text: "", isCorrect: true },
-            { text: "", isCorrect: false },
-            { text: "", isCorrect: false },
-            { text: "", isCorrect: false },
+            { text: "", isCorrect: true, id: crypto.randomUUID() },
+            { text: "", isCorrect: false, id: crypto.randomUUID() },
+            { text: "", isCorrect: false, id: crypto.randomUUID() },
+            { text: "", isCorrect: false, id: crypto.randomUUID() },
           ],
         },
       ])
