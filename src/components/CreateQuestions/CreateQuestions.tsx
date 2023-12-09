@@ -1,9 +1,9 @@
 "use client"
 
-import React, { useState } from "react"
-import { ToastContainer, toast } from "react-toastify"
+import { useState } from "react"
+import { toast } from "react-toastify"
 import { CSSTransition, TransitionGroup } from "react-transition-group"
-import "react-toastify/dist/ReactToastify.css"
+
 import "./CreateQuestions.css" // Make sure to import the CSS styles file
 import { Question } from "@/types"
 import { useSocketContext } from "@/context/SocketContext"
@@ -70,8 +70,6 @@ const CreateQuestions: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto mt-8 p-4 border rounded shadow-md">
-      <ToastContainer />
-
       <TransitionGroup>
         {questions.map((question, questionIndex) => (
           <CSSTransition key={questionIndex} timeout={300} classNames="fade">

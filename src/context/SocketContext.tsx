@@ -4,6 +4,7 @@ import { createContext, useState, useContext, useEffect } from "react"
 import { io, Socket } from "socket.io-client"
 import { useRouter } from "next/navigation"
 import { Question, Room } from "@/types"
+import { toast } from "react-toastify"
 
 const SocketContext = createContext<SocketContextType>({
   socket: null,
@@ -74,29 +75,37 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
   function roomCreated(newRoom: Room) {
     setRoom(newRoom)
     router.push(`/room/${newRoom.id}`)
+    toast.success("Sala creada")
   }
 
   function roomJoined(newRoom: Room) {
     setRoom(newRoom)
     router.push(`/room/${newRoom.id}`)
+    if (socket?.id === newRoom.owner) {
+      toast.info("Un jugador se unio a tu sala")
+    } else {
+      toast.info("Te uniste a una sala")
+    }
   }
 
   function roomLeft(updatedRoom: Room) {
     setRoom(updatedRoom)
-
     if (updatedRoom.players.length === 0) {
       setRoom(null)
     } else {
       if (updatedRoom.players.length === 1) {
         updatedRoom.owner = updatedRoom.players[0].id
+        toast.info("El dueño de la sala se fue, ahora eres el dueño")
       }
       setRoom(updatedRoom)
     }
+    toast.info("Tu rival ha abandonado la sala")
   }
 
   function gameStarted(room: Room) {
     router.push(`/room/${room?.id}/game`)
     setRoom(room)
+    toast.info("El juego comenzo")
   }
 
   function questionsReceived(room: Room) {
@@ -119,6 +128,7 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
     socket?.emit("leave-room", socket.id, roomId)
     router.push("/")
     setRoom(null)
+    toast.info("Abandonaste la sala")
   }
 
   function startGame(roomId: string) {
