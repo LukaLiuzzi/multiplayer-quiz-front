@@ -27,9 +27,7 @@ export default function RoomPage() {
 
           {room && (
             <li>
-              <Button onClick={() => leaveRoom(room.id)}>
-                Salir de la sala
-              </Button>
+              <Button onClick={() => leaveRoom()}>Salir de la sala</Button>
             </li>
           )}
 
