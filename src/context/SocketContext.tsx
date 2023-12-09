@@ -3,7 +3,7 @@
 import { createContext, useState, useContext, useEffect } from "react"
 import { io, Socket } from "socket.io-client"
 import { useRouter } from "next/navigation"
-import { Room } from "@/types"
+import { Question, Room } from "@/types"
 
 const SocketContext = createContext<SocketContextType>({
   socket: null,
@@ -11,6 +11,8 @@ const SocketContext = createContext<SocketContextType>({
   createRoom: () => {},
   joinRoom: () => {},
   leaveRoom: () => {},
+  startGame: () => {},
+  sendQuestions: () => {},
 })
 
 type SocketContextType = {
@@ -19,6 +21,8 @@ type SocketContextType = {
   createRoom: () => void
   joinRoom: (roomId: string) => void
   leaveRoom: (roomId: string) => void
+  startGame: (roomId: string) => void
+  sendQuestions: (questions: Question[]) => void
 }
 
 interface SocketProviderProps {
@@ -53,6 +57,8 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
     socket.on("room-joined", roomJoined)
     socket.on("room-left", roomLeft)
     socket.on("room-not-found", handleRoomNotFound)
+    socket.on("game-started", gameStarted)
+    socket.on("questions-sent", questionsReceived)
 
     // Cleanup event listeners on unmount
     return () => {
@@ -60,6 +66,8 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
       socket.off("room-not-found", handleRoomNotFound)
       socket.off("room-joined", roomJoined)
       socket.off("room-left", roomLeft)
+      socket.off("game-started", gameStarted)
+      socket.off("questions-sent", questionsReceived)
     }
   }, [socket])
 
@@ -86,6 +94,15 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
     }
   }
 
+  function gameStarted(room: Room) {
+    router.push(`/room/${room?.id}/game`)
+    setRoom(room)
+  }
+
+  function questionsReceived(room: Room) {
+    setRoom(room)
+  }
+
   function handleRoomNotFound() {
     alert("Room not found")
   }
@@ -104,12 +121,25 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
     setRoom(null)
   }
 
+  function startGame(roomId: string) {
+    socket?.emit("start-game", roomId)
+  }
+
+  function sendQuestions(questions: Question[]) {
+    socket?.emit("send-questions", {
+      questions,
+      roomId: room?.id,
+    })
+  }
+
   const contextValue: SocketContextType = {
     socket,
     room,
     createRoom,
     joinRoom,
     leaveRoom,
+    startGame,
+    sendQuestions,
   }
 
   return (
