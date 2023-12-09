@@ -3,6 +3,7 @@
 import { useSocketContext } from "@/context/SocketContext"
 import CreateQuestions from "@/components/CreateQuestions/CreateQuestions"
 import AnswerQuestions from "@/components/AnswerQuestions/AnswerQuestions"
+import Score from "@/components/Score/Score"
 
 const GamePage: React.FC = () => {
   const { room } = useSocketContext()
@@ -11,6 +12,7 @@ const GamePage: React.FC = () => {
     <>
       {room?.state === "question" && <CreateQuestions />}
       {room?.state === "answer" && <AnswerQuestions />}
+      {room?.state === "score" && <Score />}
     </>
   )
 }
