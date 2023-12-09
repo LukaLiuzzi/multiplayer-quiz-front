@@ -6,7 +6,7 @@ import { useSocketContext } from "@/context/SocketContext"
 import { useEffect } from "react"
 
 export default function RoomPage() {
-  const { room, leaveRoom, socket } = useSocketContext()
+  const { room, leaveRoom, socket, startGame } = useSocketContext()
 
   useEffect(() => {
     if (room !== null) {
@@ -35,9 +35,7 @@ export default function RoomPage() {
 
           {room && room.players?.length >= 2 && room.owner === socket?.id && (
             <li>
-              <Button onClick={() => console.log("empezar juego")}>
-                Empezar juego
-              </Button>
+              <Button onClick={() => startGame(room.id)}>Empezar juego</Button>
             </li>
           )}
         </ul>
