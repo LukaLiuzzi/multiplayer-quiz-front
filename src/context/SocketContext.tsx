@@ -38,7 +38,9 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
   const router = useRouter()
 
   useEffect(() => {
-    const socket = io("http://localhost:8080")
+    if (!process.env.NEXT_PUBLIC_API_URL) throw new Error("API_URL not found")
+
+    const socket = io(process.env.NEXT_PUBLIC_API_URL)
 
     socket.on("connect", () => {
       console.log("connected")
