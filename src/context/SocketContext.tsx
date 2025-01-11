@@ -43,7 +43,7 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
     const socket = io(process.env.NEXT_PUBLIC_API_URL, {
       path: "/multiplayer-quiz-back/socket.io",
       withCredentials: true, // Si es necesario enviar cookies o credenciales
-      transports: ["polling", "websocket"],
+      transports: ["websocket"],
     })
 
     socket.on("connect", () => {
