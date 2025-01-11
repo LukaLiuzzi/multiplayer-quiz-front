@@ -41,7 +41,6 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
     if (!process.env.NEXT_PUBLIC_API_URL) throw new Error("API_URL not found")
 
     const socket = io(process.env.NEXT_PUBLIC_API_URL, {
-      transports: ["websocket"], // Usar WebSocket en lugar de polling (opcional)
       path: "/multiplayer-quiz-back/socket.io", // Path correcto para la conexión WebSocket
       withCredentials: true, // Si es necesario enviar cookies o credenciales
     })
