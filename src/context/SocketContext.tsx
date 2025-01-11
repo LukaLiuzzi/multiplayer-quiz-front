@@ -41,6 +41,7 @@ export const SocketProvider = ({ children }: SocketProviderProps) => {
     if (!process.env.NEXT_PUBLIC_API_URL) throw new Error("API_URL not found")
 
     const socket = io(process.env.NEXT_PUBLIC_API_URL, {
+      path: "/socket.io",
       withCredentials: true, // Si es necesario enviar cookies o credenciales
     })
 
